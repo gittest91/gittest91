@@ -1,50 +1,81 @@
-Stage 1: Open first 60 lines of AlphaSense client
+Good. Now OBO code is reaching AlphaSense, but we hit a permission issue, not a coding syntax issue.
 
-Run this:
+Current output:
 
-Get-Content src\agents\base_llm_agent\alphasense_client.py | Select-Object -First 70
+Target email loaded: sboyina@allstate.com ✅
+companyUsers request reached AlphaSense ✅
+GraphQL error: Request is not allowed - user does not have permission to fetch this information ❌
 
-Look for:
+Meaning: the service account/token can call AlphaSense, but it is not allowed to run companyUsers. AlphaSense OBO works by letting a service account call on behalf of a target user, and downstream calls use the target user’s entitlements. But to do our current flow, the service account must be allowed to resolve the user or we need the user ID directly.
 
-COMPANY_USERS_QUERY
+What to do now
 
-You will likely see something like:
+We have two options.
 
-Query CompanyUsers($query:String){
+Option A: Ask team to allow companyUsers
 
-If yes, change Query to lowercase query.
+Ask AlphaSense/team to allow this operation for the service account:
 
-Correct should be something like:
+companyUsers
+onBehalfOfAccessToken
+GenSearch
+Option B: Ask team for direct AlphaSense target user ID
 
-COMPANY_USERS_QUERY = """
-query CompanyUsers($query: String) {
-  companyUsers(query: $query) {
-    users {
-      id
-      email
-      username
-      isActive
-    }
-  }
-}
-"""
-Stage 2: Use Copilot prompt
+If companyUsers is not allowed, ask them for the numeric AlphaSense user ID for:
 
-Give Copilot this:
+sboyina@allstate.com
 
-The OBO smoke test reaches AlphaSense /gql but companyUsers lookup fails with GraphQL parsing error: expected definition.
+Then we can skip companyUsers lookup and directly call:
 
-Please inspect COMPANY_USERS_QUERY in src/agents/base_llm_agent/alphasense_client.py. GraphQL operation keyword should be lowercase `query`, not `Query`. Fix the companyUsers GraphQL query syntax only. Do not change auth or OBO logic yet.
-Stage 3: Run smoke test again
+onBehalfOfAccessToken(targetUserId)
+Message to send team
 
-After fixing and saving:
+Send this:
 
-py test_obo_smoke.py
+Hi Team, OBO smoke test is reaching AlphaSense successfully, but the companyUsers lookup is failing with: “Request is not allowed - user does not have permission to fetch this information.”
 
-Expected next success:
+Can you please confirm one of the following:
+1. Enable/allow the companyUsers GraphQL operation for our AlphaSense service account, or
+2. Provide the numeric AlphaSense target user ID for sboyina@allstate.com so we can skip companyUsers lookup and directly test onBehalfOfAccessToken.
 
-Target email loaded: sboyina@allstate.com
-Target user id found: <id>
-OBO token generated: True
+We also need confirmation that onBehalfOfAccessToken and GenSearch are enabled for this service account.
+Meanwhile, we can prepare fallback code
 
-If another error comes, send it. But this current one is clearly a GraphQL query syntax issue, not credentials issue.
+We can add support for:
+
+ALPHASENSE_TARGET_USER_ID=
+
+Logic:
+
+If ALPHASENSE_TARGET_USER_ID exists → use it directly
+Else → use ALPHASENSE_TARGET_EMAIL and companyUsers lookup
+
+This is best because then both paths work.
+
+Next technical step
+
+Ask Copilot to update alphasense_client.py with fallback:
+
+Add support for ALPHASENSE_TARGET_USER_ID. If it exists, use that integer directly and do not call companyUsers. If it does not exist, fall back to ALPHASENSE_TARGET_EMAIL and get_target_user_id_by_email().
+
+Copilot prompt:
+
+In src/agents/base_llm_agent/alphasense_client.py, add support for ALPHASENSE_TARGET_USER_ID.
+
+Currently OBO flow resolves target_user_id using:
+os.environ["ALPHASENSE_TARGET_EMAIL"] and get_target_user_id_by_email(), which calls companyUsers.
+
+companyUsers is currently not allowed for our service account. Please add a helper method resolve_target_user_id() that:
+1. Checks os.getenv("ALPHASENSE_TARGET_USER_ID")
+2. If present, returns int(ALPHASENSE_TARGET_USER_ID)
+3. Otherwise uses ALPHASENSE_TARGET_EMAIL and get_target_user_id_by_email(email)
+4. Raises a clear error if neither is provided.
+
+Then replace direct usages of:
+self.get_target_user_id_by_email(os.environ["ALPHASENSE_TARGET_EMAIL"])
+with:
+self.resolve_target_user_id()
+
+Do not change existing auth, OBO token, or GenSearch logic.
+
+But for actual test, we still need either companyUsers permission or ALPHASENSE_TARGET_USER_ID.

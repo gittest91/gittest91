@@ -1,23 +1,35 @@
-Stage 1: Clean file list nikalo
-
-Run this command:
-
-Get-ChildItem src\agents -Recurse -File -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-Object FullName
-
-Send me output.
-
-Stage 2: Check base_llm_agent folder
-
-Run:
-
-Get-ChildItem src\agents\base_llm_agent -Force
-
-Send output.
-
-Stage 3: Clean search only in .py files
+Stage 2: Inspect AlphaSense client
 
 Run this:
 
-Get-ChildItem src\agents -Recurse -File -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-String -Pattern "alphasense|base_llm_agent|instruction|tools|agent|OBO|onBehalfOf|companyUsers" -CaseSensitive:$false
+Get-Content src\agents\base_llm_agent\alphasense_client.py
 
-This time output clean aayega.
+Send me the output or screenshots.
+
+Stage 3: Inspect AlphaSense tools
+
+After that run:
+
+Get-Content src\agents\base_llm_agent\alphasense_tools.py
+
+Send output/screenshots.
+
+Stage 4: Inspect agent definition
+
+Then run:
+
+Get-Content src\agents\base_llm_agent\agent.py
+What we are checking now
+
+We need to find:
+
+1. Does alphasense_client.py use service auth?
+2. Does it have companyUsers lookup?
+3. Does it have onBehalfOfAccessToken?
+4. Does it use OBO token in downstream GraphQL?
+5. Are tools connected to base_llm_agent?
+6. Does /run call AlphaSense tools or only normal LLM?
+
+Start with only this:
+
+Get-Content src\agents\base_llm_agent\alphasense_client.py

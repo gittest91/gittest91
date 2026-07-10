@@ -1,29 +1,21 @@
-Good. This error is not OBO failure.
+Yes, I see the issue. In your file first line has:
 
-Error reason:
+import os
 
-PromptRegistry has not been initialized.
+But the error says line 22:
 
-It happened because this import:
+print("OBO token generated:", bool(obo_token)
+SyntaxError: '(' was never closed
 
-from src.agents.base_llm_agent.alphasense_client import AlphaSenseClient
+In Notepad screenshot, it looks correct, but maybe file is not saved properly or one closing bracket is missing in actual file.
 
-first loads:
+Let’s make it clean using terminal instead of manual typing.
 
-src/agents/base_llm_agent/__init__.py
+Stage 1: Overwrite test file correctly
 
-and that imports agent.py, which expects app startup initialization. So direct import is triggering the full agent package.
+Copy-paste this full PowerShell command:
 
-We will bypass __init__.py and load only alphasense_client.py.
-
-Stage 1: Replace test file
-
-Run:
-
-notepad test_obo_smoke.py
-
-Delete old code and paste this:
-
+@'
 import os
 import importlib.util
 from pathlib import Path
@@ -46,16 +38,19 @@ print("Target user id found:", target_user_id)
 
 obo_token = client.get_obo_token(target_user_id)
 print("OBO token generated:", bool(obo_token))
+'@ | Set-Content test_obo_smoke.py
+Stage 2: Confirm file content
 
-Save and close Notepad.
+Run:
 
-Stage 2: Run again
+Get-Content test_obo_smoke.py
+
+Check last line should be exactly:
+
+print("OBO token generated:", bool(obo_token))
+
+There should be two closing brackets at the end:
+
+))
+Stage 3: Run again
 py test_obo_smoke.py
-
-Expected success:
-
-Target email loaded: sboyina@allstate.com
-Target user id found: <id>
-OBO token generated: True
-
-If error comes, send exact

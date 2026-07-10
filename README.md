@@ -1,35 +1,50 @@
-@'
-import os
-import importlib.util
-from pathlib import Path
-import requests
+Stage 1: Open first 60 lines of AlphaSense client
 
-module_path = Path(__file__).parent / "src" / "agents" / "base_llm_agent" / "alphasense_client.py"
+Run this:
 
-spec = importlib.util.spec_from_file_location("alphasense_client_direct", module_path)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
+Get-Content src\agents\base_llm_agent\alphasense_client.py | Select-Object -First 70
 
-AlphaSenseClient = module.AlphaSenseClient
+Look for:
 
-client = AlphaSenseClient()
+COMPANY_USERS_QUERY
 
-try:
-    email = os.environ["ALPHASENSE_TARGET_EMAIL"]
-    print("Target email loaded:", email)
+You will likely see something like:
 
-    target_user_id = client.get_target_user_id_by_email(email)
-    print("Target user id found:", target_user_id)
+Query CompanyUsers($query:String){
 
-    obo_token = client.get_obo_token(target_user_id)
-    print("OBO token generated:", bool(obo_token))
+If yes, change Query to lowercase query.
 
-except requests.exceptions.HTTPError as e:
-    print("HTTP error status:", e.response.status_code)
-    print("HTTP error response:")
-    print(e.response.text)
+Correct should be something like:
 
-except Exception as e:
-    print("General error:")
-    print(type(e).__name__, str(e))
-'@ | Set-Content test_obo_smoke.py
+COMPANY_USERS_QUERY = """
+query CompanyUsers($query: String) {
+  companyUsers(query: $query) {
+    users {
+      id
+      email
+      username
+      isActive
+    }
+  }
+}
+"""
+Stage 2: Use Copilot prompt
+
+Give Copilot this:
+
+The OBO smoke test reaches AlphaSense /gql but companyUsers lookup fails with GraphQL parsing error: expected definition.
+
+Please inspect COMPANY_USERS_QUERY in src/agents/base_llm_agent/alphasense_client.py. GraphQL operation keyword should be lowercase `query`, not `Query`. Fix the companyUsers GraphQL query syntax only. Do not change auth or OBO logic yet.
+Stage 3: Run smoke test again
+
+After fixing and saving:
+
+py test_obo_smoke.py
+
+Expected next success:
+
+Target email loaded: sboyina@allstate.com
+Target user id found: <id>
+OBO token generated: True
+
+If another error comes, send it. But this current one is clearly a GraphQL query syntax issue, not credentials issue.

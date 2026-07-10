@@ -1,34 +1,26 @@
-Stage 2A: Search OBO keywords in client
+What to do now
 
-Run this command:
+Ask team/client for active AlphaSense user email. Message:
 
-Select-String -Path src\agents\base_llm_agent\alphasense_client.py -Pattern "OBO|onBehalfOf|companyUsers|targetUserId|ALPHASENSE_TARGET_EMAIL|Bearer|Authorization|access_token|auth|token" -CaseSensitive:$false
+Please share the active AlphaSense user email to be used as ALPHASENSE_TARGET_EMAIL for OBO testing.
 
-This will tell us if OBO/token logic is already present.
+After they give email, add this line in .env:
 
-Send me the output.
+ALPHASENSE_TARGET_EMAIL=target.user@allstate.com
 
-Stage 2B: Show top part of client file
+Then reload .env:
 
-Run this also:
+gc .env | ? { $_ -match '^\s*[^#].*=' } | % { $p = $_ -split '=',2; Set-Item -Path ("Env:" + $p[0].Trim()) -Value $p[1].Trim() }
 
-Get-Content src\agents\base_llm_agent\alphasense_client.py | Select-Object -First 180
+Then verify:
 
-We need to see imports, env variables, auth function, _gql() function.
+Test-Path Env:ALPHASENSE_TARGET_EMAIL
 
-What we know from screenshot
+Expected:
 
-Current file already has:
+True
+Important security note
 
-AlphaSense client exists ✅
-GraphQL helper exists ✅
-Company lookup exists ✅
-Watchlist method exists ✅
+Your screenshot shows real credentials. Don’t share this screenshot further. After testing, confirm with team whether these credentials need rotation, especially if they were shared outside the secure team channel.
 
-But we still need to confirm:
-
-Service auth exists?
-OBO token generation exists?
-companyUsers lookup exists?
-Downstream _gql uses OBO token?
-ALPHASENSE_TARGET_EMAIL is used?
+For now, next step is simple: get ALPHASENSE_TARGET_EMAIL and add it to .env.

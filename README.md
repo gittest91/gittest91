@@ -1,21 +1,23 @@
-Stage 2: Search current agent references
+Stage 1: Clean file list nikalo
 
-After that, run:
+Run this command:
 
-Get-ChildItem src\agents -Recurse -File | Select-String -Pattern "base_llm_agent|instruction|tools|alphasense|agent" -CaseSensitive:$false
+Get-ChildItem src\agents -Recurse -File -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-Object FullName
 
-Send me the output.
+Send me output.
 
-What we will do after this
+Stage 2: Check base_llm_agent folder
 
-Once we see the files, we will identify:
+Run:
 
-1. Where base_llm_agent is defined
-2. Where the prompt/instruction is coming from
-3. Whether tools folder exists
-4. Whether AlphaSense client already exists
-5. Where to add OBO client code
+Get-ChildItem src\agents\base_llm_agent -Force
 
-Start with only this first:
+Send output.
 
-Get-ChildItem src\agents -Recurse -File
+Stage 3: Clean search only in .py files
+
+Run this:
+
+Get-ChildItem src\agents -Recurse -File -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-String -Pattern "alphasense|base_llm_agent|instruction|tools|agent|OBO|onBehalfOf|companyUsers" -CaseSensitive:$false
+
+This time output clean aayega.

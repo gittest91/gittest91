@@ -1,35 +1,34 @@
-Stage 2: Inspect AlphaSense client
+Stage 2A: Search OBO keywords in client
 
-Run this:
+Run this command:
 
-Get-Content src\agents\base_llm_agent\alphasense_client.py
+Select-String -Path src\agents\base_llm_agent\alphasense_client.py -Pattern "OBO|onBehalfOf|companyUsers|targetUserId|ALPHASENSE_TARGET_EMAIL|Bearer|Authorization|access_token|auth|token" -CaseSensitive:$false
 
-Send me the output or screenshots.
+This will tell us if OBO/token logic is already present.
 
-Stage 3: Inspect AlphaSense tools
+Send me the output.
 
-After that run:
+Stage 2B: Show top part of client file
 
-Get-Content src\agents\base_llm_agent\alphasense_tools.py
+Run this also:
 
-Send output/screenshots.
+Get-Content src\agents\base_llm_agent\alphasense_client.py | Select-Object -First 180
 
-Stage 4: Inspect agent definition
+We need to see imports, env variables, auth function, _gql() function.
 
-Then run:
+What we know from screenshot
 
-Get-Content src\agents\base_llm_agent\agent.py
-What we are checking now
+Current file already has:
 
-We need to find:
+AlphaSense client exists ✅
+GraphQL helper exists ✅
+Company lookup exists ✅
+Watchlist method exists ✅
 
-1. Does alphasense_client.py use service auth?
-2. Does it have companyUsers lookup?
-3. Does it have onBehalfOfAccessToken?
-4. Does it use OBO token in downstream GraphQL?
-5. Are tools connected to base_llm_agent?
-6. Does /run call AlphaSense tools or only normal LLM?
+But we still need to confirm:
 
-Start with only this:
-
-Get-Content src\agents\base_llm_agent\alphasense_client.py
+Service auth exists?
+OBO token generation exists?
+companyUsers lookup exists?
+Downstream _gql uses OBO token?
+ALPHASENSE_TARGET_EMAIL is used?

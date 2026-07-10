@@ -1,40 +1,34 @@
-Meanwhile, we can prepare fallback code
+Use this Copilot prompt now:
 
-We can add support for:
+In src/agents/base_llm_agent/alphasense_client.py, add support for ALPHASENSE_TARGET_USER_ID as a fallback/override for OBO.
 
-ALPHASENSE_TARGET_USER_ID=
+Current issue:
+The OBO smoke test reaches AlphaSense, but get_target_user_id_by_email() calls companyUsers and fails with:
+"Request is not allowed - user does not have permission to fetch this information."
 
-Logic:
+Required change:
+1. Add a helper method inside AlphaSenseClient:
 
-If ALPHASENSE_TARGET_USER_ID exists → use it directly
-Else → use ALPHASENSE_TARGET_EMAIL and companyUsers lookup
+def resolve_target_user_id(self) -> int:
+    - First check os.getenv("ALPHASENSE_TARGET_USER_ID")
+    - If present, return int(ALPHASENSE_TARGET_USER_ID)
+    - If not present, check os.getenv("ALPHASENSE_TARGET_EMAIL")
+    - If email exists, call self.get_target_user_id_by_email(email)
+    - If neither exists, raise RuntimeError with a clear message:
+      "Set ALPHASENSE_TARGET_USER_ID or ALPHASENSE_TARGET_EMAIL for OBO."
 
-This is best because then both paths work.
-
-Next technical step
-
-Ask Copilot to update alphasense_client.py with fallback:
-
-Add support for ALPHASENSE_TARGET_USER_ID. If it exists, use that integer directly and do not call companyUsers. If it does not exist, fall back to ALPHASENSE_TARGET_EMAIL and get_target_user_id_by_email().
-
-Copilot prompt:
-
-In src/agents/base_llm_agent/alphasense_client.py, add support for ALPHASENSE_TARGET_USER_ID.
-
-Currently OBO flow resolves target_user_id using:
-os.environ["ALPHASENSE_TARGET_EMAIL"] and get_target_user_id_by_email(), which calls companyUsers.
-
-companyUsers is currently not allowed for our service account. Please add a helper method resolve_target_user_id() that:
-1. Checks os.getenv("ALPHASENSE_TARGET_USER_ID")
-2. If present, returns int(ALPHASENSE_TARGET_USER_ID)
-3. Otherwise uses ALPHASENSE_TARGET_EMAIL and get_target_user_id_by_email(email)
-4. Raises a clear error if neither is provided.
-
-Then replace direct usages of:
+2. Replace all direct usages of:
 self.get_target_user_id_by_email(os.environ["ALPHASENSE_TARGET_EMAIL"])
+
 with:
 self.resolve_target_user_id()
 
-Do not change existing auth, OBO token, or GenSearch logic.
+3. Do not change existing authentication, OBO token generation, headers, GenSearch, or polling logic.
 
-But for actual test, we still need either companyUsers permission or ALPHASENSE_TARGET_USER_ID.
+4. Do not log tokens or secrets.
+
+After Copilot updates, run:
+
+Select-String -Path src\agents\base_llm_agent\alphasense_client.py -Pattern "resolve_target_user_id|ALPHASENSE_TARGET_USER_ID|ALPHASENSE_TARGET_EMAIL"
+
+Then send me that output.

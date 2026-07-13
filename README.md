@@ -1,65 +1,17 @@
-This is Python code bug, not permission issue. Most likely somewhere code has this type of mistake:
+In src/agents/base_llm_agent/alphasense_client.py, fix get_target_user_id_by_email() to safely handle companyUsers results where email may be missing, None, or not a string.
 
-os.getenv["ALPHASENSE_TARGET_EMAIL"]   # wrong
+Current failing line:
+active_users = [u for u in users if u["email"].lower() == email.lower() and u.get("isActive")]
 
-instead of:
+Error:
+TypeError: 'builtin_function_or_method' object is not subscriptable
 
-os.getenv("ALPHASENSE_TARGET_EMAIL")   # correct
+Please update the logic to:
+- Iterate users normally
+- Use user_email = str(u.get("email") or "").lower()
+- Compare with email.lower()
+- Check u.get("isActive") is True
+- Return the first matching active user's id
+- If none found, raise RuntimeError(f"No active user found for email {email}")
 
-or:
-
-response.json["data"]   # wrong
-
-instead of:
-
-response.json()["data"] # correct
-Do not run app.py now
-
-You typed:
-
-py app.py
-
-Cancel it if it starts. Right now we need to debug test_obo_smoke.py.
-
-Press:
-
-Ctrl + C
-
-if needed.
-
-Step 1: Update test file to show full error line
-
-Run:
-
-notepad test_obo_smoke.py
-
-Replace full file with this:
-
-import os
-import importlib.util
-from pathlib import Path
-import traceback
-
-module_path = Path(__file__).parent / "src" / "agents" / "base_llm_agent" / "alphasense_client.py"
-
-spec = importlib.util.spec_from_file_location("alphasense_client_direct", module_path)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
-
-AlphaSenseClient = module.AlphaSenseClient
-
-client = AlphaSenseClient()
-
-try:
-    email = os.environ["ALPHASENSE_TARGET_EMAIL"]
-    print("Target email loaded:", email)
-
-    target_user_id = client.resolve_target_user_id()
-    print("Target user id found:", target_user_id)
-
-    obo_token = client.get_obo_token(target_user_id)
-    print("OBO token generated:", bool(obo_token))
-
-except Exception:
-    print("Full traceback:")
-    traceback.print_exc()
+Do not change OBO token, auth, _gql, or GenSearch logic.

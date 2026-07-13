@@ -1,94 +1,93 @@
-Step 1: Keep server terminal open
+What those logs mean
+1. GET / HTTP/1.1 404 Not Found
 
-Do not close the terminal where py app.py is running.
+This means something opened:
 
-Server should be running at:
+http://localhost:8081/
 
-http://localhost:8081
-Step 2: Open a new terminal
+But your app does not have a / homepage route, so 404 is normal.
 
-In VS Code:
+Use only:
 
-Terminal → New Terminal
+http://localhost:8081/healthcheck
+http://localhost:8081/docs
+2. GET /login/login 404 Not Found
 
-Use this new terminal for API commands.
+This is also not your OBO issue. Some browser/app tried to open a login route, but your local app does not have /login/login.
 
-Step 3: Create a new session
+3. /main_static... 404 Not Found
 
-Run this single command:
+These are static UI files the browser tried to load. They are not needed for our /run API test.
+
+4. EventHub not configured
+
+This is only logging/export warning:
+
+EVENTHUB_CONNECTION_STRING not found
+
+It does not block OBO.
+
+5. LiteLLM completion model=gpt-5.1
+
+This means the base agent responded using the LLM. But to confirm AlphaSense tool was used, we need to see logs like:
+
+base_llm_agent.alphasense_client - generating obo token
+Starting GenSearch
+Progress: 100%
+
+If those logs are missing, the agent may have answered directly instead of calling the gensearch tool.
+
+What is done so far
+
+Confirmed completed:
+
+Local app running ✅
+Healthcheck working ✅
+Docs working ✅
+Session creation working ✅
+/run working ✅
+OBO token generation working ✅
+Standalone AlphaSense GenSearch with OBO working ✅
+Agent has AlphaSense tools attached ✅
+
+Now remaining:
+
+Confirm /run response visibly contains AlphaSense tool output
+Make agent reliably use gensearch tool
+Clean test/output files
+Commit only required code
+Next step: Force /run to call AlphaSense tool
+
+In the same API terminal, create a new session:
 
 $sessionId = (Invoke-RestMethod -Method POST "http://localhost:8081/apps/base_llm_agent/users/test-user/sessions" -ContentType "application/json" -Body '{"state":{}}').id; $sessionId
 
-It should print a session ID like:
+Then run this stronger prompt:
 
-xxxxx-xxxx-xxxx-xxxx
-Step 4: Create request body
+$body = '{"app_name":"base_llm_agent","user_id":"test-user","session_id":"' + $sessionId + '","new_message":{"role":"user","parts":[{"text":"Call the gensearch tool. Query: Compare Microsoft and Google business performance. Return the AlphaSense result with citations."}]}}'
 
-Run this:
-
-$body = '{"app_name":"base_llm_agent","user_id":"test-user","session_id":"' + $sessionId + '","new_message":{"role":"user","parts":[{"text":"Use the AlphaSense gensearch tool to give a short summary comparing Microsoft and Google business performance. Include citations if available."}]}}'
-Step 5: Call /run
-
-Run this:
+Now call /run and save output:
 
 $raw = Invoke-WebRequest -Method POST "http://localhost:8081/run" -ContentType "application/json" -Body $body -UseBasicParsing
-
-This may take some time because AlphaSense GenSearch runs and polls.
-
-Step 6: Check status
-
-Run:
-
 $raw.StatusCode
-
-Expected:
-
-200
-Step 7: Save output to file
-
-Run:
-
 $raw.Content | Set-Content run_output_raw.json -Encoding UTF8
-
-Then check file size:
-
 Get-Item run_output_raw.json | Select-Object Name,Length
 
-Expected: Length should be greater than 0.
-
-Step 8: Open output file
-
-Run:
+Then open it:
 
 code run_output_raw.json
 
-Inside VS Code, search for:
-
-Microsoft
-
-or
-
-functionResponse
-
-or
+Search inside:
 
 gensearch
-
-or
-
+functionCall
+functionResponse
+Microsoft
 citations
-Step 9: Check server logs also
 
-In the server terminal, confirm you see something like:
+Also check server terminal for:
 
 generating obo token
-Starting GenSearch
 Progress: 100%
-POST /run HTTP/1.1 200 OK
-Do now
 
-Start with only Step 3:
-
-$sessionId = (Invoke-RestMethod -Method POST "http://localhost:8081/apps/base_llm_agent/users/test-user/sessions" -ContentType "application/json" -Body '{"state":{}}').id; $sessionId
-
-Send me the session ID output, then we’ll do the /run call.
+If the server logs show generating obo token and Progress: 100%, then /run → AlphaSense OBO → answer is confirmed.

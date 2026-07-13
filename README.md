@@ -1,28 +1,46 @@
-Next step: Force /run to call AlphaSense tool
+Step 2: Create body
 
-In the same API terminal, create a new session:
+Run only this:
 
-$sessionId = (Invoke-RestMethod -Method POST "http://localhost:8081/apps/base_llm_agent/users/test-user/sessions" -ContentType "application/json" -Body '{"state":{}}').id; $sessionId
+$body = @{ app_name="base_llm_agent"; user_id="test-user"; session_id=$sessionId; new_message=@{ role="user"; parts=@(@{ text="Call the gensearch tool. Query: Compare Microsoft and Google business performance. Return the AlphaSense result with citations." }) } } | ConvertTo-Json -Depth 10
+Step 3: Call /run
 
-Then run this stronger prompt:
-
-$body = '{"app_name":"base_llm_agent","user_id":"test-user","session_id":"' + $sessionId + '","new_message":{"role":"user","parts":[{"text":"Call the gensearch tool. Query: Compare Microsoft and Google business performance. Return the AlphaSense result with citations."}]}}'
-
-Now call /run and save output:
+Run only this:
 
 $raw = Invoke-WebRequest -Method POST "http://localhost:8081/run" -ContentType "application/json" -Body $body -UseBasicParsing
+
+Wait until it completes.
+
+Step 4: Check status
+
+Run:
+
 $raw.StatusCode
+
+Expected:
+
+200
+Step 5: Save output
+
+Run:
+
 $raw.Content | Set-Content run_output_raw.json -Encoding UTF8
+
+Then:
+
 Get-Item run_output_raw.json | Select-Object Name,Length
 
-Then open it:
+Length should be greater than 0.
+
+Step 6: Open output
+
+Run:
 
 code run_output_raw.json
 
-Search inside:
+Search inside file for:
 
 gensearch
-functionCall
 functionResponse
 Microsoft
 citations

@@ -1,35 +1,17 @@
-import os
-import importlib.util
-from pathlib import Path
-import traceback
+Stage 1: Check tool and agent registration
 
-module_path = Path(__file__).parent / "src" / "agents" / "base_llm_agent" / "alphasense_client.py"
+Run these two commands:
 
-spec = importlib.util.spec_from_file_location("alphasense_client_direct", module_path)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
+Get-Content src\agents\base_llm_agent\agent.py
 
-AlphaSenseClient = module.AlphasenseClient
+Then:
 
-client = AlphaSenseClient()
+Get-Content src\agents\base_llm_agent\alphasense_tools.py | Select-Object -First 260
 
-try:
-    print("Target user ID:", os.environ.get("ALPHASENSE_TARGET_USER_ID"))
-    print("Target email:", os.environ.get("ALPHASENSE_TARGET_EMAIL"))
+We need to confirm:
 
-    prompt = "Give a short summary of Microsoft and Google business performance."
-    print("Starting GenSearch...")
+1. AlphaSense tools are imported in agent.py
+2. Tools are attached to base_llm_agent
+3. /run can call AlphaSense GenSearch
 
-    conversation_id = client.auto(prompt)
-    print("Conversation ID:", conversation_id)
-
-    print("Waiting for result...")
-    result = client.wait_for_result(conversation_id, mode="auto", timeout=180)
-
-    print("GenSearch completed.")
-    print("Result:")
-    print(result.get("markdown") or result)
-
-except Exception:
-    print("Full traceback:")
-    traceback.print_exc()
+Send me the output/screenshots of these two files.

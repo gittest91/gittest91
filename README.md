@@ -1,23 +1,30 @@
-In src/agents/base_llm_agent/alphasense_client.py, please fix GenSearch start to use OBO as well.
+Stage 2: Reload .env
 
-Current issue:
-poll_conversation() now uses:
-target_user_id = self.resolve_target_user_id()
-data = self._gql(POLL_QUERY, {"conversationId": conversation_id}, target_user_id)
+Run this in terminal:
 
-But gen_search() currently starts GenSearch using:
-data = self._gql(MUTATIONS[mode], {"input": input_payload})
+gc .env | ? { $_ -match '^\s*[^#].*=' } | % { $p = $_ -split '=',2; Set-Item -Path ("Env:" + $p[0].Trim()) -Value $p[1].Trim() }
+Stage 3: Verify target email loaded
 
-For correct OBO behavior, the initial GenSearch mutation must also use the same OBO target user.
+Run:
 
-Please update gen_search() so it does:
-target_user_id = self.resolve_target_user_id()
-data = self._gql(MUTATIONS[mode], {"input": input_payload}, target_user_id)
+echo $env:ALPHASENSE_TARGET_EMAIL
 
-Do not change auth, headers, polling, or other tools.
-Do not log tokens or secrets.
+Expected:
 
+ray.kramer@allstate.com
 
+Also run:
 
-Get-Content src\agents\base_llm_agent\alphasense_client.py | Select-Object -Skip 485 -First 20
+Test-Path Env:ALPHASENSE_TARGET_USER_ID
 
+Expected for now:
+
+False
+
+If it says True, show me before running test.
+
+Stage 4: Run OBO smoke test
+
+Run:
+
+py test_obo_smoke.py

@@ -1,41 +1,23 @@
-Stage 1: Check file has content
+Step 1: New session create karo
 
 Run:
 
-Get-Item run_output.json | Select-Object Name,Length
+$session = Invoke-RestMethod -Method POST "http://localhost:8081/apps/base_llm_agent/users/test-user/sessions" `
+  -ContentType "application/json" `
+  -Body '{"state":{}}'
 
-If Length is very small or 0, then file did not save properly.
+$session.id
 
-Stage 2: Search inside output
+Ye ek new session id print karega.
 
-Run:
+Step 2: /run raw response save karo
 
-Select-String -Path run_output.json -Pattern "Microsoft|Google|AlphaSense|gensearch|functionCall|functionResponse|markdown|text" -CaseSensitive:$false
-Stage 3: Open JSON properly in VS Code
-
-Run:
-
-code run_output.json
-
-Then in VS Code search:
-
-Microsoft
-
-or:
-
-functionResponse
-
-or:
-
-gensearch
-If file is empty or no answer is visible
-
-Run this complete command again:
+Now run this full command:
 
 $body = @{
   app_name = "base_llm_agent"
   user_id = "test-user"
-  session_id = "fb592793-36dc-4ac3-a18c-fa2c39574ce8"
+  session_id = $session.id
   new_message = @{
     role = "user"
     parts = @(
@@ -44,13 +26,53 @@ $body = @{
       }
     )
   }
-} | ConvertTo-Json -Depth 10
+} | ConvertTo-Json -Depth 20
 
-$response = Invoke-RestMethod -Method POST "http://localhost:8081/run" `
+$raw = Invoke-WebRequest -Method POST "http://localhost:8081/run" `
   -ContentType "application/json" `
-  -Body $body
+  -Body $body `
+  -UseBasicParsing
 
-$response | ConvertTo-Json -Depth 50 | Set-Content run_output.json
-code run_output.json
+$raw.StatusCode
+$raw.Content | Set-Content run_output_raw.json -Encoding UTF8
+Get-Item run_output_raw.json | Select-Object Name,Length
 
-Then search in run_output.json again.
+Expected:
+
+200
+Name                Length
+----                ------
+run_output_raw.json some-big-number
+Step 3: Open output
+
+Run:
+
+code run_output_raw.json
+
+Then search inside file:
+
+Microsoft
+
+or
+
+functionResponse
+
+or
+
+gensearch
+Step 4: If still empty
+
+Run this command and send me output:
+
+$raw.StatusCode
+$raw.Content.Length
+$raw.Content.Substring(0, [Math]::Min(1000, $raw.Content.Length))
+
+Important: don’t commit these files:
+
+run_output.json
+run_output_raw.json
+test_obo_smoke.py
+.env
+
+Your server logs already confirmed /run → AlphaSense OBO → Progress 100%; now we are only capturing the readable response properly.

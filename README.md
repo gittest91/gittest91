@@ -1,49 +1,28 @@
-Step 1: Open PR link
+What to do
 
-Open this link from terminal output:
+Open this link:
 
-https://github.com/Allstate-Internal/inv-alphasense-agent/pull/new/Bala/alphasense
-Step 2: Select correct branches
+https://github.com/Allstate-Internal/inv-alphasense-agent/compare/dev...Bala%2Falphasense?expand=1
 
-On PR page, make sure:
+Then on GitHub:
 
-Base branch: dev
-Compare branch: Bala/alphasense
+Base: dev
+Compare: Bala/alphasense
+Click: Create pull request
 
-Very important: base should be dev, not main/master.
+After PR is created, GitHub will give a link like:
 
-Step 3: PR title
+https://github.com/Allstate-Internal/inv-alphasense-agent/pull/123
 
-Use:
+That /pull/123 link is what you should send to Sumanth.
 
-Bala/alphasense - AlphaSense OBO integration
-Step 4: PR description
+Message:
 
-Paste this:
-
-Implemented and verified AlphaSense OBO integration.
-
-Changes:
-- Added numeric ALPHASENSE_TARGET_USER_ID support for OBO.
-- Fixed companyUsers GraphQL query syntax.
-- Added safe OBO token response/error handling.
-- Ensured GenSearch start and polling both use OBO token.
-- Added local-mode auth middleware bypass while keeping non-local auth intact.
-
-Verified:
-- App startup successful.
-- Healthcheck working.
-- Session creation working.
-- /run invokes base_llm_agent.
-- OBO token generation working.
-- AlphaSense GenSearch through OBO reaches 100%.
-- /run returns AlphaSense response with gensearch/functionResponse content.
-Step 5: After PR is created, send Sumanth this
 Hi Sumanth,
 
 I have raised the PR for AlphaSense OBO integration.
 
-PR Link: <paste PR link>
+PR Link: <paste actual /pull/number link here>
 
 Summary:
 - Added numeric ALPHASENSE_TARGET_USER_ID support for OBO.
@@ -51,12 +30,3 @@ Summary:
 - Added safe OBO token error handling.
 - Updated GenSearch start and polling to use OBO token.
 - Verified /run → base_llm_agent → AlphaSense gensearch → OBO → response flow successfully.
-
-The OBO token generation and AlphaSense GenSearch through /run are working and returning AlphaSense content/citations.
-Note about git warning
-
-This warning is not blocking:
-
-Your name and email address were configured automatically...
-
-Commit and push already succeeded. Later, you can set correct Git identity if required.

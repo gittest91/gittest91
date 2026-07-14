@@ -1,23 +1,15 @@
-PR title
-Bala/alphasense - AlphaSense OBO integration
-PR description
+Hi Sumanth,
 
-Paste this:
+I have raised the PR for AlphaSense OBO integration.
 
-Implemented and verified AlphaSense OBO integration.
+PR Link: https://github.com/Allstate-Internal/inv-alphasense-agent/pull/1
 
-Changes:
+Summary:
 - Added numeric ALPHASENSE_TARGET_USER_ID support for OBO.
 - Fixed companyUsers GraphQL query syntax.
-- Added safe OBO token response/error handling.
-- Ensured GenSearch start and polling both use OBO token.
+- Added safe OBO token error handling.
+- Updated GenSearch start and polling to use OBO token.
 - Added local-mode auth middleware bypass while keeping non-local auth intact.
+- Verified /run → base_llm_agent → AlphaSense gensearch → OBO → response flow successfully.
 
-Verified:
-- App startup successful.
-- Healthcheck working.
-- Session creation working.
-- /run invokes base_llm_agent.
-- OBO token generation working.
-- AlphaSense GenSearch through OBO reaches 100%.
-- /run returns AlphaSense response with gensearch/functionResponse content.
+The OBO token generation and AlphaSense GenSearch through /run are working and returning AlphaSense content/citations.

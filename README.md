@@ -1,17 +1,17 @@
-What to do
+Step 2: GitHub me login karo
 
-Open this link:
+Browser me GitHub open karo aur Allstate GitHub account se login karo.
 
-https://github.com/Allstate-Internal/inv-alphasense-agent/compare/dev...Bala%2Falphasense?expand=1
+Agar SSO/Authorize option aaye, allow/authorize karo.
 
-Then on GitHub:
+Then open repo manually:
 
-Base: dev
-Compare: Bala/alphasense
-Click: Create pull request
+https://github.com/Allstate-Internal/inv-alphasense-agent
 
-After PR is created, GitHub will give a link like:
+Agar repo open ho gaya, then PR create kar sakte ho.
 
-https://github.com/Allstate-Internal/inv-alphasense-agent/pull/123
+Step 3: PR create karo
 
-That /pull/123 link is what you should send to Sumanth.
+Repo me jaake:
+
+Pull requests → New pull request

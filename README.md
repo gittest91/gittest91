@@ -1,1 +1,1 @@
-The PR added AlphaSense OBO support, including support for ALPHASENSE_TARGET_USER_ID, GraphQL query fixes, improved OBO token handling, and GenSearch using the OBO token. Sumanth reviewed and merged the PR into dev.
+Hi team, for the AlphaSense Agent Dev and Staging migration, could you please share the deployment pipeline details and the Dev/Staging endpoints to verify the deployment? Also let me know if there are any specific validation steps after deployment.

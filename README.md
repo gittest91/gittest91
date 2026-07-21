@@ -1,1 +1,1 @@
-Hi Sumanth, my PR has been merged into `dev`. Could you please let me know how the deployment works for Dev and Staging? Is it automatic after merge, and where can I verify the deployment status/URLs?
+The PR added AlphaSense OBO support, including support for ALPHASENSE_TARGET_USER_ID, GraphQL query fixes, improved OBO token handling, and GenSearch using the OBO token. Sumanth reviewed and merged the PR into dev.

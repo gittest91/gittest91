@@ -1,1 +1,8 @@
-Hi team, for the AlphaSense Agent Dev and Staging migration, could you please share the deployment pipeline details and the Dev/Staging endpoints to verify the deployment? Also let me know if there are any specific validation steps after deployment.
+Run:
+
+git fetch origin
+git log origin/beta-release --oneline --all --grep="alphasense obo"
+
+You can also check whether your commit exists in beta-release:
+
+git branch -r --contains 4dc38b2

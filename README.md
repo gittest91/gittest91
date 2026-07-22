@@ -1,5 +1,4 @@
-git branch -r --contains e4edcfd
+git show origin/beta-release:src/agents/base_llm_agent/alphasense_client.py | Select-String -Pattern "resolve_target_user_id|ALPHASENSE_TARGET_USER_ID|get_obo_token|onBehalfOfAccessToken" -CaseSensitive:$false
 
-Also compare the actual OBO files between dev and beta-release:
 
-git diff origin/beta-release..origin/dev -- app.py src/agents/base_llm_agent/alphasense_client.py
+git show origin/beta-release:app.py | Select-String -Pattern "APP_ENV|BearerAuthMiddleware" -CaseSensitive:$false

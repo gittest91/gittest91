@@ -1,7 +1,9 @@
-self._use_obo
+git grep "_use_obo" origin/beta-release
 
-means the application has logic to decide whether OBO should be used.
+or
 
-Then:
+git grep "OBO_TOKEN_QUERY" origin/beta-release
 
-self._resolve_obo_user_ids()
+or simply open the file:
+
+code src/inv_alphasense_agents/alphasense_agent/alphasense_client.py

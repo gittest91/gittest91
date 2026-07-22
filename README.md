@@ -1,8 +1,5 @@
-Run:
+git branch -r --contains e4edcfd
 
-git fetch origin
-git log origin/beta-release --oneline --all --grep="alphasense obo"
+Also compare the actual OBO files between dev and beta-release:
 
-You can also check whether your commit exists in beta-release:
-
-git branch -r --contains 4dc38b2
+git diff origin/beta-release..origin/dev -- app.py src/agents/base_llm_agent/alphasense_client.py

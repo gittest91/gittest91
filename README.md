@@ -1,9 +1,1 @@
-git grep "_use_obo" origin/beta-release
-
-or
-
-git grep "OBO_TOKEN_QUERY" origin/beta-release
-
-or simply open the file:
-
-code src/inv_alphasense_agents/alphasense_agent/alphasense_client.py
+Hi Kyle, I confirmed that the OBO implementation is present in beta-release. The Dev application registration and AlphaSense Non-Prod Managed Vault location have also been shared. Could you please confirm which beta-release commit was deployed, whether it was deployed to Dev or Staging, and share the environment endpoint so we can verify the healthcheck and OBO flow?

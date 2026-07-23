@@ -1,7 +1,5 @@
-Get-ChildItem -Recurse -File | Where-Object {
-    $_.Name -match "vault|alphasense"
-} | Select-Object FullName
+git grep -n -i -e "os.getenv" -e "environ" -e "client_id" -e "client_secret" -e "username" -e "password" -- src/inv_alphasense_agents/alphasense_agent
 
-Then run:
+Then display the AlphaSense client file:
 
-Get-ChildItem .\src\inv_alphasense_agents\alphasense_agent -File | Select-Object Name
+Get-Content .\src\inv_alphasense_agents\alphasense_agent\alphasense_client.py

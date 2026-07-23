@@ -1,13 +1,7 @@
-git checkout -b feature/alphasense-vault-integration
+Get-ChildItem -Recurse -File | Where-Object {
+    $_.Name -match "vault|alphasense"
+} | Select-Object FullName
 
-After that, verify it:
+Then run:
 
-git branch
-
-You should see something like:
-
-  Bala/alphasense
-  beta-release
-  dev
-  main
-* feature/alphasense-vault-integration
+Get-ChildItem .\src\inv_alphasense_agents\alphasense_agent -File | Select-Object Name

@@ -1,9 +1,5 @@
-git grep -n "os.getenv"
+git grep -n -i -e "ALPHASENSE_TARGET" -e "target_user" -e "target_email"
 
 Then run:
 
-git grep -n "dotenv"
-
-Finally run:
-
-git grep -n "load_dotenv"
+Get-Content .\src\resources\config-dev.yml

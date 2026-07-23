@@ -1,1 +1,9 @@
-Get-Content .\src\inv_alphasense_agents\alphasense_agent\alphasense_client.py | Select-Object -Skip 110 -First 50
+git grep -n -i -e "vault_key" -e '"alphasense"' -- .
+
+Then run:
+
+Get-ChildItem -Recurse -File |
+Where-Object {
+    $_.Extension -in ".json", ".yaml", ".yml", ".toml"
+} |
+Select-Object FullName

@@ -1,9 +1,9 @@
-git grep -n -i -e "vault_key" -e '"alphasense"' -- .
+git grep -n "os.getenv"
 
 Then run:
 
-Get-ChildItem -Recurse -File |
-Where-Object {
-    $_.Extension -in ".json", ".yaml", ".yml", ".toml"
-} |
-Select-Object FullName
+git grep -n "dotenv"
+
+Finally run:
+
+git grep -n "load_dotenv"

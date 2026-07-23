@@ -1,2 +1,1 @@
-Get-Content .\.venv\Lib\site-packages\python_appfabric_vault\vault.py |
-Select-Object -Skip 75 -First 125
+Hi Kyle, I reviewed the current implementation. The application is already using python_appfabric_vault (VaultBuilder/get_secured_data) to read secrets from Managed Vault. The example you shared uses the AppRole → LDAP → Managed Vault flow. Should I replace the current VaultBuilder implementation with the new flow from your example, or is there an updated python_appfabric_vault library that should be used instead?

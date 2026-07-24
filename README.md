@@ -1,1 +1,12 @@
-Hi Kyle, I reviewed the current implementation. The application is already using python_appfabric_vault (VaultBuilder/get_secured_data) to read secrets from Managed Vault. The example you shared uses the AppRole → LDAP → Managed Vault flow. Should I replace the current VaultBuilder implementation with the new flow from your example, or is there an updated python_appfabric_vault library that should be used instead?
+git branch --show-current
+git status
+
+Expected branch:
+
+feature/alphasense-vault-integration
+
+Now list only the AlphaSense variable names from .env:
+
+Get-Content .env |
+Where-Object { $_ -match '^\s*ALPHASENSE_[A-Z0-9_]+\s*=' } |
+ForEach-Object { ($_ -split '=', 2)[0].Trim() }

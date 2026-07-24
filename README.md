@@ -1,3 +1,7 @@
-Get-Content .env |
-Where-Object { $_ -match '^\s*[^#][A-Za-z0-9_]+\s*=' } |
-ForEach-Object { ($_ -split '=', 2)[0].Trim() }
+Run these commands:
+
+git grep -n -E 'ALPHASENSE_(API_KEY|EMAIL|PASSWORD|CLIENT_ID|CLIENT_SECRET|TARGET_EMAIL|TARGET_USER_ID)'
+
+Then run:
+
+git grep -n -E 'os\.getenv\("ALPHASENSE_|os\.environ\[.*ALPHASENSE_'

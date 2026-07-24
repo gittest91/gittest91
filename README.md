@@ -1,1 +1,1 @@
-Hi Nandita, I verified that the application is able to read ALPHASENSE_API_CREDS_NONPROD successfully through VaultBuilder().get_secured_data(), and it returns the AlphaSense credentials from Managed Vault. The remaining OBO user mapping is still stored in config-dev.yml. Should I move only the OBO user mapping into Managed Vault, or is there another Vault integration that should replace the current implementation?
+git grep -n "obo_user_ids"

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from python_appfabric_oauth2_producer.config_setting import Settings
 from python_appfabric_vault.vault import VaultBuilder
 
-load_dotenv(override=True)
+load_dotenv(dotenv_path=".env", override=True)
 
 settings = Settings.get_instance().data
 vault_key = settings["alphasense"]["vault_key"]

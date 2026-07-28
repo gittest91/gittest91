@@ -14,3 +14,7 @@ $env:APP_ENV="local"
 
 # Start the FastAPI application
 py app.py
+
+
+echo $env:APP_ENV
+

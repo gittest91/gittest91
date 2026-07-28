@@ -16,3 +16,4 @@ Dev Token Authenticated
 {
   "state": {}
 }
+$env:APP_ENV="local"; Write-Host "APP_ENV=$env:APP_ENV"; py app.py

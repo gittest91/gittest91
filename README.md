@@ -12,3 +12,7 @@ ForEach-Object {
 $env:APP_ENV="local"; py app.py
 
 Dev Token Authenticated
+
+{
+  "state": {}
+}

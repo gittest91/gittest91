@@ -1,3 +1,5 @@
+Get-Content .\src\resources\config-local.yml
+
 What to do now
 1. Open the README around the authentication section
 

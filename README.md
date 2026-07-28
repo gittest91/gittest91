@@ -1,104 +1,87 @@
-.\.venv\Scripts\Activate.ps1
+What to do now
+1. Open the README around the authentication section
 
-gc .env | ? { $_ -match '^\s*[^#].*=' } | % {
-    $p = $_ -split '=',2
-    Set-Item -Path ("Env:" + $p[0].Trim()) -Value $p[1].Trim()
-}
+Run:
 
-$env:APP_ENV="local"
+Get-Content README.md | Select-Object -Skip 140 -First 40
 
-py app.py
+Also check the test-token section:
 
+Get-Content README.md | Select-Object -Skip 290 -First 110
 
-Do this first
-1. Find the expected local token
+Your grep output shows important references around lines:
 
-Run this in PowerShell from the project folder:
+152
+154
+162
+303
+319
+387
 
-git grep -n "DEVELOPMENT_TOKEN"
+Look for instructions explaining how to generate or obtain:
 
-Also run:
+<your-jwt-token>
 
-git grep -n "Authorization"
+or:
 
-and:
+mock_valid_token
+2. Check whether local testing supports a mock token
 
-git grep -n "Bearer"
+Search more specifically:
 
-This will show:
+git grep -n "mock_valid_token"
+git grep -n "mock token"
+git grep -n "jwt"
+git grep -n "local auth"
 
-the environment-variable name used by the middleware
-whether the token must be sent as a Bearer token
-whether there is a special local-development header
-2. Check whether the token exists in your environment
-Get-ChildItem Env: | Where-Object {
-    $_.Name -match "TOKEN|AUTH|OAUTH"
-}
+The README line:
 
-Do not share the actual values in chat.
+headers={"Authorization": f"Bearer {mock_valid_token}"}
 
-You can also check only the development token:
+suggests the project may already contain a local test fixture or helper for generating a valid mock JWT.
 
-if ($env:DEVELOPMENT_TOKEN) {
-    Write-Host "DEVELOPMENT_TOKEN is loaded"
-} else {
-    Write-Host "DEVELOPMENT_TOKEN is missing"
-}
-
-If it is missing, load your .env again:
-
-Get-Content .env |
-Where-Object { $_ -match '^\s*[^#].*=' } |
-ForEach-Object {
-    $parts = $_ -split '=', 2
-    Set-Item -Path ("Env:" + $parts[0].Trim()) -Value $parts[1].Trim()
-}
-
-Then restart the application:
-
-py app.py
 3. Add the token in Postman
 
-Open the session request, then go to:
+After obtaining the valid token:
 
-Authorization → Type: Bearer Token
+Go to:
 
-Enter the same local development token used by the application.
+Authorization
 
-Postman should send:
+Select:
 
-Authorization: Bearer <your-development-token>
+Bearer Token
 
-Do not manually type the word Bearer in the token field if Postman already adds it.
+Paste only the token value.
 
-4. Send the request again
+Postman will send:
 
-Use:
+Authorization: Bearer <token>
+
+Then send:
 
 POST http://localhost:8081/apps/base_llm_agent/users/test-user/sessions
 
-Under Body → raw → JSON, send:
+Body:
 
 {
   "state": {}
 }
+Important distinction
 
-Expected result:
+The following header inside alphasense_client.py:
 
-{
-  "id": "..."
-}
+"Authorization": f"Bearer {token}"
 
-The status should be 200 or another successful 2xx response.
+is used by your agent when calling AlphaSense externally.
 
-If Bearer Token still returns 403
+It is not the token needed by Postman to access your local FastAPI endpoint.
 
-Your middleware may expect a custom development-token header instead of standard Bearer authentication. Use the git grep output to confirm the exact header name. It may look similar to:
+There are two different authentications:
 
-DEVELOPMENT_TOKEN: <token>
+Postman → FastAPI application JWT
+FastAPI agent → AlphaSense bearer token
 
-or:
+Your failure is happening in the first authentication layer.
 
-X-Development-Token: <token>
-
-Do not guess the header name; confirm it from the middleware code.
+The Event Hub errors are unrelated to the 403. The blocker is still the missing or invalid JWT in the Postman Authorization header.

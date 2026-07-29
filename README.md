@@ -1,5 +1,9 @@
-$appName = "alphasense_agent"
-$userId = $env:ALPHASENSE_TARGET_EMAIL
-$encodedUserId = [uri]::EscapeDataString($userId)
+$session = Invoke-RestMethod `
+    -Method POST `
+    -Uri "http://localhost:8081/apps/$appName/users/$encodedUserId/sessions" `
+    -Headers $headers `
+    -ContentType "application/json" `
+    -Body '{"state":{}}'
 
-Write-Host "Testing with mapped user:" $userId
+$sessionId = $session.id
+$session

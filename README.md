@@ -1,10 +1,6 @@
-$params = @{
-    Method      = "POST"
-    Uri         = "http://localhost:8081/run"
-    Headers     = $headers
-    ContentType = "application/json"
-    Body        = $body
-}
+Get-ChildItem .\src\inv_alphasense_agents -Directory | Select-Object Name
 
-$response = Invoke-RestMethod @params
-$response | ConvertTo-Json -Depth 20
+Also run:
+
+Get-ChildItem .\src\inv_alphasense_agents -Recurse -Filter "agent.py" |
+Select-Object FullName

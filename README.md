@@ -1,15 +1,22 @@
-Get-ChildItem -Recurse -File -Force |
-Where-Object {
-    $_.FullName -notmatch '\\.git\\|__pycache__'
-} |
-Select-String -Pattern `
-    'jwk-set-uri|jwks|audience|issuer|development.token|development_token|auth.bypass|skip.auth|oauth2|bearer|authorization' `
-    -CaseSensitive:$false |
-Select-Object Path, LineNumber, Line
+POST http://localhost:8081/apps/base_llm_agent/users/test-user/sessions
 
-Also inspect environment variable names without displaying their values:
+{
+  "state": {}
+}
 
-Get-Content .env |
-Where-Object { $_ -match '^[A-Za-z_][A-Za-z0-9_]*=' } |
-ForEach-Object { ($_ -split '=', 2)[0] } |
-Sort-Object
+
+http://localhost:8081/run
+
+{
+  "app_name": "base_llm_agent",
+  "user_id": "test-user",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "new_message": {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Call the gensearch tool. Query: Compare Microsoft and Google business performance."
+      }
+    ]
+  }
+}

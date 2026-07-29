@@ -1,5 +1,6 @@
-pytest tests/ --cov=src --cov-report=term-missing
+python -m pip install -r requirements-dev.txt
+After it finishes
 
-or exactly what Jenkins runs:
+Verify the installation:
 
-python -m pytest tests/ -v -m "not integration" --cov=src --cov-report=term
+python -m pytest --version

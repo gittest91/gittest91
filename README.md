@@ -1,2 +1,1 @@
-Hi Sumanth, I have shared the .env file. Please place it in the project root, activate the virtual environment, and run py app.py again.
-If the issue continues, please share the final few lines of the traceback after get_secured_data("DEVELOPMENT_TOKEN"), since that will show whether the issue is related to the certificate path, Vault access, or the missing Vault key. Also, please verify that the certificate path configured in .env exists on your machine.
+Hi Sumanth, I have shared the .env configuration details. I’ll pause the Jenkins deployment until you confirm whether the application starts successfully or whether this is only a local Vault setup issue on your machine. Please let me know once I can proceed with the deployment.

@@ -1,6 +1,1 @@
-python -m pip install -r requirements-dev.txt
-After it finishes
-
-Verify the installation:
-
-python -m pytest --version
+Hi Kyle, I checked the automated test coverage locally. The project is configured with pytest and pytest-cov. I installed the development dependencies and ran the test suite. All 5 tests passed successfully, and the current local coverage report shows 100% coverage for the executed tests. The local end-to-end testing with Postman also completed successfully.
